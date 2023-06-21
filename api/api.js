@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
     }
 });
 var upload = multer({ storage: storage })
-import FollowController from '../db/controller/followController.js'
+import FollowController from '../db/controller/FollowController.js'
 import PageCategoryController from '../db/controller/PageCategoryController.js'
 import ContentController from '../db/controller/ContentController.js'
 import UserController from '../db/controller/UserController.js'
