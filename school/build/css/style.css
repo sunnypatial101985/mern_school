@@ -779,3 +779,18 @@ tr:nth-child(even) {
 table {
     width: 100%;
 }
+
+#welcomeTxt {
+    text-align: right;
+    color: #9BAF58;
+    font-weight: bold;
+    font-size: 24px;
+    padding-top: 12px;
+}
+
+.profileImg {
+    position: absolute;
+    right: 0px;
+    border: solid 1px lightblue;
+    width: 120px;
+}

@@ -7,7 +7,8 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function(req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        req.picName = file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+        cb(null, req.picName);
     }
 });
 var upload = multer({ storage: storage })
@@ -56,11 +57,11 @@ api.get('/page/:id', ContentController.getPageContentByPageId)
 api.post('/user/login', UserController.login)
 api.post('/user/register', upload.single('pic'), UserController.register)
 
-api.get('/user/edit/:id', UserController.editById)
-api.put('/user/update/:id', UserController.updateById)
+api.get('/user/edit/:id', verifyToken, UserController.editById)
+api.put('/user/update/:id', verifyToken, UserController.updateById)
 api.post('/user/forget-password', UserController.sendNewPwd)
 api.put('/user/activate/:id', UserController.activeUser)
-api.delete('/user/delete/:id', UserController.deleteById)
-api.get('/user/list', verifyToken, UserController.getAll)
+api.delete('/user/delete/:id', verifyToken, UserController.deleteById)
+api.get('/user/list/:email', verifyToken, UserController.getAll)
 
 export default api

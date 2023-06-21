@@ -36,6 +36,11 @@ app.use(bodyParser.json())
 connectDb(process.env.DB_URL + '/' + process.env.DB_NAME)
     // INCLUDE api's
 app.use('/api', api)
+// new code added
+app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
+// new code added
+
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, './school/build')))
 

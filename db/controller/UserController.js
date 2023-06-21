@@ -8,12 +8,12 @@ class UserController {
     saltRounds = 10;
 
     static register = async(req, res) => {
-        const { email, password, gender, active } = req.body
+        const { email, name, password, gender, active } = req.body
         const users = await User.findOne({ email });
         if (users) {
             res.send({ status: 0, message: "Email already exist." })
         } else {
-            let pic = req.file.filename;
+            let pic = req.picName;
             let genderStatus = 1;
             if (gender == "female") {
                 genderStatus = 2;
@@ -23,6 +23,7 @@ class UserController {
             const uObj = new User
             uObj.email = email
             uObj.password = hash
+            uObj.name = name
             uObj.pic = pic
             uObj.gender = genderStatus
             uObj.active = active
@@ -79,7 +80,7 @@ class UserController {
     }
 
     static getAll = async(req, res) => {
-        await User.find().sort("email").then((docs) => {
+        await User.find({ email: { $ne: req.params.email } }).sort("email").then((docs) => {
             res.send({ status: 1, message: "valid user.", data: docs })
         }).catch((error) => {
             res.send({ status: 0, message: "not valid user.", data: [] })
@@ -113,40 +114,48 @@ class UserController {
             if (match) {
                 // CREATE TOKEN
                 var token = jwt.sign({ email: docs.email, pwd: docs.password }, 'secret', { expiresIn: '1h' });
-                res.send({ status: 1, message: "Login successfully.", token: token })
+                res.send({ status: 1, message: "Login successfully.", token: token, name: docs.name })
             } else {
                 res.send({ status: 0, message: "Wrong password." })
             }
         }).catch((error) => {
+            // console.log(error)
             res.send({ status: 0, message: "Wrong email address." })
         })
     }
     static updateById = async(req, res) => {
         let id = req.params.id
         await User.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true }).then((docs) => {
-            res.send(docs)
+            // res.send(docs)
+            res.send({ status: 1, message: "Updated." })
         }).catch((error) => {
-            res.send(error)
+            // res.send(error)
+            res.send({ status: 0, message: "Server error." })
         })
     }
     static deleteById = async(req, res) => {
         let id = req.params.id
         await User.deleteOne({ _id: id }).then((docs) => {
-            res.send(docs)
+            res.send({ status: 1, message: "User deleted." })
         }).catch((error) => {
-            res.send(error)
+            res.send({ status: 0, message: "Server error." })
         })
     }
     static editById = async(req, res) => {
         let id = req.params.id
         await User.findOne({ _id: id }).then((docs) => {
             if (docs) {
-                res.send(docs)
+                res.send({
+                    status: 1,
+                    message: "User deleted.",
+                    detail: docs
+                })
+
             } else {
-                res.send({ msg: "wrong id" })
+                res.send({ status: 0, message: "wrong id" })
             }
         }).catch((error) => {
-            res.send({ msg: "wrong id" })
+            res.send({ status: 0, message: "wrong id" })
         })
     }
     static sendEmail = async(id, st) => {
@@ -184,6 +193,12 @@ class UserController {
             text: "", // plain text body
             html: lHtml, // html body
         });
+
+        // console.log("Message sent: %s", info.messageId);
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+        // Preview only available when sending through an Ethereal account
+        // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     }
 }
 
