@@ -16,6 +16,7 @@ app.use(bodyParser.json())
 connectDb(process.env.DB_URL + '/' + process.env.DB_NAME)
     // INCLUDE api's
 app.use('/api', api)
+const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, './school/build')))
 
 app.get('*', function(req, res) {
